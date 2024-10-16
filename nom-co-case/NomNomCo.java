@@ -1,7 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.security.SecureRandom;
 
+// TODO: #REGION =========== FACTORY PATTERN FOR DATA MODELS ==============
 // Abstract class representing a Confectionary
 abstract class Confectionary {
     String name;
@@ -13,14 +15,14 @@ abstract class Confectionary {
     abstract void bake();
 }
 
-// Concrete classes for Cupcake and Tart
+// Concrete classes for Cupcake
 class Cupcake extends Confectionary {
     @Override
     void bake() {
         System.out.println("Baking a Cupcake named " + name + " with " + softness + " softness and " + toppings.size() + " toppings.");
     }
 }
-
+// Concrete classes for Tart
 class Tart extends Confectionary {
     @Override
     void bake() {
@@ -32,7 +34,6 @@ class Tart extends Confectionary {
 interface ConfectionaryFactory {
     Confectionary createConfectionary();
 }
-
 // Factory for creating Cupcake
 class CupcakeFactory implements ConfectionaryFactory {
     @Override
@@ -40,7 +41,6 @@ class CupcakeFactory implements ConfectionaryFactory {
         return new Cupcake();
     }
 }
-
 // Factory for creating Tart
 class TartFactory implements ConfectionaryFactory {
     @Override
@@ -48,7 +48,76 @@ class TartFactory implements ConfectionaryFactory {
         return new Tart();
     }
 }
+// TODO: #ENDREGION =======================================
 
+
+// TODO: #REGION =========== ADAPTER FOR CONVERTING DIFFERENT TYPE OF CLASS/MODEL/CONTRACT ==============
+// PaymentProcessor interface (Target)
+interface PaymentProcessor {
+    void processPayment(double amount);
+}
+
+// CashAdapter (One Concrete Adapter)
+class CashAdapter implements PaymentProcessor {
+    @Override
+    public void processPayment(double amount) {
+        System.out.println("Price: $" + String.format("%.2f", amount));
+
+    }
+}
+// TransferAdapter (Another Concrete Adapter)
+class TransferAdapter implements PaymentProcessor {
+    @Override
+    public void processPayment(double amount) {
+        String accountNumber = generateAccountNumber(); // Use existing utility
+        System.out.println("Price: $" + String.format("%.2f", amount) + " with Account: " + accountNumber);
+    }
+
+    private String generateAccountNumber() {
+        SecureRandom random = new SecureRandom();
+        StringBuilder accountNumber = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            int digit = random.nextInt(10);
+            accountNumber.append(digit);
+        }
+        return accountNumber.toString();
+    }
+}
+// CryptoAdapter (Another Concrete Adapter)
+class CryptoAdapter implements PaymentProcessor {
+    @Override
+    public void processPayment(double amount) {
+        String cryptoAddress = generateCryptoAddress();
+        String cryptoCurrency = generateCryptoCurrency();
+        System.out.println("Price: " + cryptoCurrency + " " + String.format("%.2f", amount) + " with Address: " + cryptoAddress);
+    }
+
+    private String generateCryptoAddress() {
+        SecureRandom random = new SecureRandom();
+        StringBuilder cryptoAddress = new StringBuilder("0x");
+        String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+        for (int i = 0; i < 10; i++) {
+            int index = random.nextInt(characters.length());
+            cryptoAddress.append(characters.charAt(index));
+        }
+        return cryptoAddress.toString();
+    }
+
+    private String generateCryptoCurrency() {
+        SecureRandom random = new SecureRandom();
+        StringBuilder cryptoCurrency = new StringBuilder("");
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        for (int i = 0; i < 3; i++) {
+            int index = random.nextInt(characters.length());
+            cryptoCurrency.append(characters.charAt(index));
+        }
+        return cryptoCurrency.toString();
+    }
+}
+// TODO: #ENDREGION =======================================
+
+
+// TODO: #REGION =========== SINGLETON FOR SINGLE INSTANCE CLASS/OBJECT CREATION ==============
 // Singleton class for managing the database
 class ConfectionaryDatabase {
     private static ConfectionaryDatabase instance;
@@ -96,20 +165,24 @@ class ConfectionaryDatabase {
               System.out.println("Payment Type: " + c.paymentType);
               
               // Display price and account number or crypto address based on payment type
+              // Main code where the paymentType is determined (this might be inside a method or class)
+              PaymentProcessor paymentProcessor;
+
               switch (c.paymentType) {
-                  case "Cash":
-                      System.out.println("Price: $" + String.format("%.2f", c.price));
-                      break;
-                  case "Transfer":
-                      String accountNumber = generateAccountNumber();
-                      System.out.println("Price: $" + String.format("%.2f", c.price) + " with Account: " + accountNumber);
-                      break;
-                  case "Crypto":
-                      String cryptoAddress = generateCryptoAddress();
-                      System.out.println("Price: $" + String.format("%.2f", c.price) + " with Address: " + cryptoAddress);
-                      break;
+                case "Cash":
+                    paymentProcessor = new CashAdapter();
+                    break;
+                case "Transfer":
+                    paymentProcessor = new TransferAdapter();
+                    break;
+                case "Crypto":
+                    paymentProcessor = new CryptoAdapter();
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown payment type: " + c.paymentType);
               }
-              System.out.println("==========================");
+
+              paymentProcessor.processPayment(c.price);
           }
       }
     }
@@ -138,8 +211,25 @@ class ConfectionaryDatabase {
 
         return cryptoAddress.toString();
     }
-}
 
+    // Utility method to generate a random 3-character crypto currency
+    private String generateCryptoCurrency() {
+        SecureRandom random = new SecureRandom();
+        StringBuilder cryptoCurrency = new StringBuilder("");
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        for (int i = 0; i < 3; i++) {
+            int index = random.nextInt(characters.length());
+            cryptoCurrency.append(characters.charAt(index));
+        }
+
+        return cryptoCurrency.toString();
+    }
+}
+// TODO: #ENDREGION =======================================
+
+
+// TODO: #REGION =========== MAIN FUNCTION ==============
 public class NomNomCo {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -260,3 +350,4 @@ public class NomNomCo {
         System.out.println("Confectionary has been baked and added to the database!");
     }
 }
+// TODO: #ENDREGION =======================================
