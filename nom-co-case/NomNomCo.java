@@ -4,6 +4,17 @@ import java.util.Scanner;
 import java.security.SecureRandom;
 
 // TODO: #REGION =========== FACTORY PATTERN FOR DATA MODELS ==============
+// Interface Class represent a Confectionary Behaviour
+// public interface Confectionary {
+//     String getName();
+//     String getType();
+//     String getSoftness();
+//     List<String> getToppings();
+//     double getPrice();
+//     String getPaymentType();
+//     void bake();
+// }
+
 // Abstract class representing a Confectionary
 abstract class Confectionary {
     String name;
