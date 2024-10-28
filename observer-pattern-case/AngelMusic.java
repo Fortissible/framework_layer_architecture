@@ -79,6 +79,7 @@ public class AngelMusic {
     public static void main(String[] args) {
         AngelMusicService musicService = new AngelMusicService(); // INITIALISASI ANGEL MUSIC SERVICE AS A SUBJECT/PUBLISHER/PROVIDER
         HotelLogaCompany hotelCompany = new HotelLogaCompany();
+        
         // Adding subscribers
         musicService.addSubscriber(new RadioGogoCompany());
         musicService.addSubscriber(hotelCompany);
@@ -94,7 +95,7 @@ public class AngelMusic {
         // Notify all subscribers
         musicService.notifySubscribers(track);
 
-        // REMOVE A SUBSCRIBER IF NEEDED
+        // REMOVE A SUBSCRIBER
         musicService.removeSubscriber(hotelCompany);
 
         // User input for current track
