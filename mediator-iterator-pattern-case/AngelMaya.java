@@ -7,7 +7,7 @@ interface Mediator {
     void notify(Component sender, String event);
 }
 
-// Abstract Component Class
+// Abstract Component Class (Template Pattern)
 abstract class Component {
     protected Mediator mediator;
 
