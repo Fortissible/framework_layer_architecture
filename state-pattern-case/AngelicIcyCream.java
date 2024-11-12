@@ -2,6 +2,10 @@ import java.util.Scanner;
 
 // VendingMachineState interface to define actions in each state
 interface VendingMachineState {
+    /**
+     * Interface machine state ini yang akan menyimpan semua 
+     * fungsi-fungsi abstract/interface yang bisa digunakan dalam implementasi state
+     */
     void insertMoney(VendingMachine machine);
     void pickIceCream(VendingMachine machine);
     void generateIceCream(VendingMachine machine);
@@ -9,6 +13,7 @@ interface VendingMachineState {
 }
 
 // IdleState implementation
+// State untuk menunggu koin dari pembeli
 class IdleState implements VendingMachineState {
     public void insertMoney(VendingMachine machine) {
         System.out.println("Inserting money...");
@@ -29,6 +34,7 @@ class IdleState implements VendingMachineState {
 }
 
 // SelectingIceCreamState implementation
+// State pemilihan tipe ice cream (cone/bucket)
 class SelectingIceCreamState implements VendingMachineState {
     public void insertMoney(VendingMachine machine) {
         System.out.println("Money has already been inserted.");
@@ -47,7 +53,8 @@ class SelectingIceCreamState implements VendingMachineState {
     }
 }
 
-// GenerateIceCreamState implementation
+// GenerateIceCreamState implementation  
+// Atau state pemilihan flavour/rasa
 class GenerateIceCreamState implements VendingMachineState {
     public void insertMoney(VendingMachine machine) {
         System.out.println("Can't insert money now. Please generate your ice cream.");
@@ -68,6 +75,7 @@ class GenerateIceCreamState implements VendingMachineState {
 }
 
 // IceCreamReadyState implementation
+// State untuk pengambilan ice cream yang telah siap
 class IceCreamReadyState implements VendingMachineState {
     public void insertMoney(VendingMachine machine) {
         System.out.println("Please take your ice cream first.");
@@ -135,6 +143,7 @@ class VendingMachine {
     }
 
     public String getStateName() {
+        // Fungsi untuk mendapatkan nama class dari suatu object.
         return state.getClass().getSimpleName();
     }
 
@@ -179,6 +188,7 @@ public class AngelicIcyCream {
         int choice;
 
         while (true) {
+            //#region UI Propmt Code Block
             System.out.println("\nCurrent State: " + machine.getStateName());
             System.out.println("1. Insert Money to Vending");
             System.out.println("2. Picking ice cream (bucket or cone)");
@@ -186,6 +196,8 @@ public class AngelicIcyCream {
             System.out.println("4. Take the ice cream");
             System.out.println("0. Exit");
             System.out.print("Choose an option: ");
+            //#endregion
+
             choice = scanner.nextInt();
 
             switch (choice) {
