@@ -4,6 +4,7 @@ public class Client {
     public static void main(String[] args) {
         MovieDatabase movieDatabase = new MovieDatabase();
         MovieCacheProxy movieCacheProxy = new MovieCacheProxy(movieDatabase);
+        MovieAuthProxy movieAuthProxy = new MovieAuthProxy(movieCacheProxy);
 
         Scanner scanner = new Scanner(System.in);
 
@@ -14,14 +15,23 @@ public class Client {
             System.out.print("Input movie name >> ");
             String movieName = scanner.nextLine();
 
-            String description = movieCacheProxy.getMovieDescription(movieName);
+            // User need to input the crendentials
+            System.out.println("Please provide your credentials.");
+            System.out.print("Username: ");
+            String username = scanner.nextLine();
+            System.out.print("Password: ");
+            String password = scanner.nextLine();
+
+            String description = movieAuthProxy.getMovieDescription(movieName, username, password);
 
             if (description != null) {
                 System.out.println("Movie Name: " + movieName);
                 System.out.println("Movie Description: " + description);
             } else {
-                System.out.println("Movie not found!");
+                System.out.println("Failed to fetch movie description. Please try again.");
             }
+
+            movieDatabase.getTotalDatabaseAccessCount();
 
             System.out.println("Would you like to search for another movie? (yes/no)");
             String continueOption = scanner.nextLine();
