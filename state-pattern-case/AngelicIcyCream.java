@@ -41,7 +41,8 @@ class SelectingIceCreamState implements VendingMachineState {
     }
 
     public void pickIceCream(VendingMachine machine) {
-        System.out.println("Please select an ice cream type.");
+        System.out.println("Selecting ice cream...");
+        machine.setState(new GenerateIceCreamState());
     }
 
     public void generateIceCream(VendingMachine machine) {
@@ -135,9 +136,10 @@ class VendingMachine {
     private IceCreamPreparationTemplate iceCream;
 
     public VendingMachine() {
-        this.state = new IdleState();
+        this.state = new IdleState(); // INITIAL STATE IDLE STATE
     }
 
+    // FUNGSI UNTUK MERUBAH STATE PADA MESIN
     public void setState(VendingMachineState state) {
         this.state = state;
     }
@@ -160,8 +162,8 @@ class VendingMachine {
                 iceCream = new ConeIceCream();
                 setState(new GenerateIceCreamState());
             }
-            System.out.println("Ice Cream Type not available.");
         } else {
+            System.out.println("Ice Cream Type not available.");
             System.out.println("Invalid action for the current state.");
         }
     }
