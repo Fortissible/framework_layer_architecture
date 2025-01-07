@@ -55,6 +55,26 @@ class PasswordTextBox extends Component {
     }
 }
 
+class RememberMeToggle extends Component {
+    private Boolean toggled;
+
+    public RememberMeToggle(Mediator mediator) {
+        super(mediator);
+        toggled = false;
+    }
+
+    public void toggleRememberMe(String toggleInput) {
+        if("yes".equals(toggleInput)){
+            this.toggled = true;
+        }
+        mediator.notify(this, "rememberMeToggleInput");
+    }
+
+    public Boolean getRememberMeToggle(){
+        return toggled;
+    }
+}
+
 class AdminSecretTextBox extends Component {
     private String adminSecret;
 
@@ -139,6 +159,7 @@ class LoginMediator implements Mediator {
     private CaptchaTextBox captchaTextBox;
     private LoginOption loginOption;
     private SubmitButton submitButton;
+    private RememberMeToggle rememberMeToggle;
 
     public LoginMediator() {
         emailTextBox = new EmailTextBox(this);
@@ -147,6 +168,7 @@ class LoginMediator implements Mediator {
         captchaTextBox = new CaptchaTextBox(this);
         loginOption = new LoginOption(this);
         submitButton = new SubmitButton(this);
+        rememberMeToggle = new RememberMeToggle(this);
     }
 
     public void startLoginProcess() {
@@ -158,17 +180,31 @@ class LoginMediator implements Mediator {
         System.out.print("Input your password >> ");
         passwordTextBox.inputPassword(scanner.nextLine());
 
+        System.out.print("Do you want to save the password >> ");
+        String toggleInput = scanner.nextLine();
+        rememberMeToggle.toggleRememberMe(toggleInput);
+
         System.out.println("1. Login as user\n2. Login as admin");
         System.out.print("Please select your option >> ");
         loginOption.selectOption(scanner.nextInt());
         scanner.nextLine(); // consume newline
 
+        // Modify so:
+        // Add a new component named "Remember Me" after password component to remember user password
+        // if toggled to yes then after user successfuly login, print "Your password will be remembered..."
+        // if toggled to no then dont print anyword
+
+        // Normal user & Admin user will be asked for captcha
+        // After captcha if the user is admin user, then will be asked for admin secret
+
+        // Change the admin secret to Sup3rDup3r4dm1ns3cr3ts
+
+        System.out.println("Input the captcha to make sure you are not a robot(" + captchaTextBox.getGeneratedCaptcha() + ") >> ");
+        captchaTextBox.inputCaptcha(scanner.nextLine());
+
         if (loginOption.isAdmin()) {
             System.out.print("Input your admin's secret >> ");
             adminSecretTextBox.inputAdminSecret(scanner.nextLine());
-        } else {
-            System.out.println("Input the captcha to make sure you are not a robot(" + captchaTextBox.getGeneratedCaptcha() + ") >> ");
-            captchaTextBox.inputCaptcha(scanner.nextLine());
         }
 
         System.out.println("Press enter to submit");
@@ -188,16 +224,22 @@ class LoginMediator implements Mediator {
             } else if (!isPasswordValid) {
                 System.out.println("Invalid password. Must be alphanumeric.");
             } else if (loginOption.isAdmin()) {
-                if ("4dminS3cr3t".equals(adminSecretTextBox.getAdminSecret())) {
-                    System.out.println("Redirect to Home page...");
+                if ("Sup3rDup3r4dm1ns3cr3ts".equals(adminSecretTextBox.getAdminSecret())) {
+                    System.out.println("Continue...");
+                    if(rememberMeToggle.getRememberMeToggle()){
+                        System.out.println("Your password will be remembered...");
+                    }
                 } else {
-                    System.out.println("Fail to login.");
+                    System.out.println("Fail to login, your admin secret is wrong.");
                 }
             } else {
                 if (captchaTextBox.getGeneratedCaptcha().equals(captchaTextBox.getCaptchaInput())) {
-                    System.out.println("Redirect to Home page...");
+                    System.out.println("Continue...");
+                    if(rememberMeToggle.getRememberMeToggle()){
+                        System.out.println("Your password will be remembered...");
+                    }
                 } else {
-                    System.out.println("Fail to login.");
+                    System.out.println("Fail to login, captcha is wrong.");
                 }
             }
         }
