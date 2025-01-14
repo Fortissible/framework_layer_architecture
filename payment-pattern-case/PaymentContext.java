@@ -6,6 +6,11 @@ public class PaymentContext {
   }
 
   public String pay(double amount) {
-      return paymentMethod.pay(amount);
+      double userBalance = paymentMethod.getBalance();
+      if (userBalance < amount) {
+        return "-1";
+      } else {
+        return paymentMethod.pay(amount);
+      }
   }
 }

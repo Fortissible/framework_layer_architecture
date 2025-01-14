@@ -9,6 +9,8 @@ public class PaymentMethodFactory {
                 return new CreditCardPayment(scanner);
             case 3:
                 return new QRPayment();
+            case 4:
+                return new GopayPayment(scanner);
             default:
                 return null;
         }
