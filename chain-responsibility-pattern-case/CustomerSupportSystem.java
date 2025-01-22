@@ -7,18 +7,21 @@ enum IssueType {
     // TAMBAH ISSUE TYPE
     COMPLAINT,
     HACKED,
-    NOT_AVAILABLE
+    MISSING_CARD,
+    NOT_AVAILABLE // ERROR GENERAL
 }
 
 class SupportTicket {
     private final IssueType issueType;
     private final String description;
 
+    // INIT CLASS SupportTicket
     public SupportTicket(IssueType issueType, String description) {
         this.issueType = issueType;
         this.description = description;
     }
 
+    // GETTER
     public IssueType getIssueType() {
         return issueType;
     }
@@ -28,13 +31,17 @@ class SupportTicket {
     }
 }
 
+// CHAIN RESPONSIBILITY INTERFACE/ABSTRACT
 abstract class SupportHandler {
+    // Variable for holding next handler reference
     private SupportHandler nextHandler;
 
+    // Function for settings next handler reference
     public void setNextHandler(SupportHandler nextHandler) {
         this.nextHandler = nextHandler;
     }
 
+    // Function for handling ticket
     public void handleTicket(SupportTicket ticket) {
         if (canHandle(ticket)) {
             processTicket(ticket);
@@ -45,27 +52,42 @@ abstract class SupportHandler {
         }
     }
 
+    // Function for process ticket checker
     protected abstract boolean canHandle(SupportTicket ticket);
 
+    // Function for process ticket based on spesific case
     protected abstract void processTicket(SupportTicket ticket);
 }
 
+// CONCRETE CHAIN RESPONSIBILITY HANDLER LEVEL 1
 class Level1Support extends SupportHandler {
     @Override
     protected boolean canHandle(SupportTicket ticket) {
-        return ticket.getIssueType() == IssueType.ACCOUNT_HELP;
+        boolean isHandled = ticket.getIssueType() == IssueType.ACCOUNT_HELP || ticket.getIssueType() == IssueType.MISSING_CARD;
+        if (!isHandled) {
+            System.out.println("Forwarding to Level-2 Support handler");
+        }
+        return isHandled;
     }
 
     @Override
     protected void processTicket(SupportTicket ticket) {
-        System.out.println("Level 1 Support: Resolving account issue - " + ticket.getDescription());
+        if (ticket.getIssueType() == IssueType.ACCOUNT_HELP){
+            System.out.println("Level 1 Support: Resolving account issue - " + ticket.getDescription());
+        } else {
+            System.out.println("Level 1 Support: Resolving your missing card - " + ticket.getDescription());
+        }
     }
 }
 
 class Level2Support extends SupportHandler {
     @Override
     protected boolean canHandle(SupportTicket ticket) {
-        return ticket.getIssueType() == IssueType.REFUND || ticket.getIssueType() == IssueType.COMPLAINT;
+        boolean isHandled = ticket.getIssueType() == IssueType.REFUND || ticket.getIssueType() == IssueType.COMPLAINT;
+        if (!isHandled) {
+            System.out.println("Forwarding to Level-3 Support handler");
+        }
+        return isHandled;
     }
 
     @Override
@@ -77,7 +99,11 @@ class Level2Support extends SupportHandler {
 class Level3Support extends SupportHandler {
     @Override
     protected boolean canHandle(SupportTicket ticket) {
-        return ticket.getIssueType() == IssueType.TECHNICAL;
+        boolean isHandled = ticket.getIssueType() == IssueType.TECHNICAL;
+        if (!isHandled) {
+            System.out.println("Forwarding to Level-4 Support handler");
+        }
+        return isHandled;
     }
 
     @Override
@@ -89,7 +115,11 @@ class Level3Support extends SupportHandler {
 class Level4Support extends SupportHandler {
     @Override
     protected boolean canHandle(SupportTicket ticket) {
-        return ticket.getIssueType() == IssueType.HACKED;
+        boolean isHandled = ticket.getIssueType() == IssueType.HACKED;
+        if (!isHandled) {
+            System.out.println("There's no service available for that ticket issue type");
+        }
+        return isHandled;
     }
 
     @Override
@@ -103,6 +133,8 @@ public class CustomerSupportSystem {
         switch (serviceType.toLowerCase()) {
             case "account":
                 return IssueType.ACCOUNT_HELP;
+            case "missing":
+                return IssueType.MISSING_CARD;
             case "refund":
                 return IssueType.REFUND;
             case "complaint":
@@ -133,7 +165,7 @@ public class CustomerSupportSystem {
         scanner.nextLine();
 
         while (choice == 1) {
-            System.out.print("Enter the issue type (Account, Refund, Complaint, Technical, Hacked): ");
+            System.out.print("Enter the issue type (Account, Refund, Complaint, Technical, Hacked, Missing): ");
             String serviceType = scanner.nextLine();
             IssueType issueType = getIssueType(serviceType);
 
